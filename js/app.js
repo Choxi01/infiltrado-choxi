@@ -105,7 +105,7 @@
     $("listaJug").innerHTML = n
       ? cfg.jugadores.map((nom, i) => `<span class="chip-jug">${esc(nom)}<button data-a="quitarJug" data-i="${i}" aria-label="Quitar a ${esc(nom)}">×</button></span>`).join("") +
         `<button class="link" data-a="borrarJug">Borrar todos</button>`
-      : `<p class="vacio">Agregá a los que van a jugar, en el orden en que están sentados. Podés pegar varios nombres separados por coma.</p>`;
+      : `<p class="vacio">En el orden en que están sentados. Podés pegar varios separados por coma.</p>`;
 
     $("modos").innerHTML = Object.values(P).map(p => `<button class="modo" data-a="modo" data-modo="${p.id}" aria-pressed="${p.id === cfg.modo}" ${p.disponible ? "" : "disabled"}>
       <span class="emoji">${p.emoji}</span><b>${p.nombre}</b>${p.disponible ? `<small>${esc(p.lema)}</small>` : `<span class="pronto">Próximamente</span>`}</button>`).join("");
@@ -150,6 +150,10 @@
       sino("adivinar", "El impostor eliminado adivina", "Si adivina la palabra, gana él solo.") +
       sino("impostorEmpieza", "El impostor puede empezar", "Si no, siempre arranca alguien con la palabra.") +
       seg("debate", "Reloj del debate", "Cuenta regresiva con sonido y vibración.", [[0, "Sin reloj"], [60, "1′"], [120, "2′"], [180, "3′"], [300, "5′"]]);
+
+    $("resumenOpc").textContent = [o.votacion === "unica" ? "Votación única" : "Por rondas",
+      o.voto === "secreta" ? "voto secreto" : "a mano alzada",
+      o.debate ? `reloj ${o.debate / 60}′` : "sin reloj", o.revelar ? "se revela el rol" : "rol oculto"].join(" · ");
 
     const v = E.validarConfig(cfg, T);
     $("errorConfig").hidden = v.ok || n === 0;
@@ -208,21 +212,27 @@
       pie(`${btnDeshacer()}<button class="btn-principal" data-a="empezar">▶ Empezar la ronda</button>`);
   }
 
+  // La hoja del expediente. Civil e infiltrado se ven idénticos (el infiltrado no sabe que lo es).
   function cartaRol(s, j) {
     const p = E.preset(s);
+    const ficha = `<div class="ficha"><span>Expediente N.º ${String(j.id + 1).padStart(3, "0")}</span><span>${esc(j.nombre)}</span></div>`;
     if (j.rol === "impostor") {
       const ayuda = j.ve === "pista" ? `Tu pista: <b>${esc(s.tema.pista)}</b>`
-        : j.ve === "categoria" ? `Categoría: <b>${esc(s.tema.categoria)}</b>` : "No tenés ninguna pista.";
-      return `<div class="carta-caja r-impostor"><div class="carta-emoji">${R.TIPOS[j.tipo].emoji}</div>
-        <p class="tenue">${esc(j.nombre)}</p><h1 class="grande">${p.tituloImpostor}</h1>
+        : j.ve === "categoria" ? `Categoría: <b>${esc(s.tema.categoria)}</b>` : "Sin pista. Nada de nada.";
+      return `<div class="carta-caja">${ficha}<span class="sello">${p.tituloImpostor.replace(/^(Sos el|Estás) /, "")}</span>
+        <h1 class="grande">${p.tituloImpostor}</h1>
         <p class="pista-imp">${ayuda}</p>
         <p>Escuchá a los demás y mezclate.${s.cfg.opciones.adivinar ? " Si te descubren, vas a poder adivinar la palabra." : ""}</p>`;
     }
     const palabra = j.rol === "infiltrado" ? s.tema.parecida : s.tema.palabra;
-    return `<div class="carta-caja"><p class="tenue">${esc(j.nombre)}, tu palabra es</p>
+    return `<div class="carta-caja">${ficha}<span class="sello">Confidencial</span>
+      <p class="tenue">Tu palabra es</p>
       <h1 class="palabra">${esc(palabra)}</h1>
       <p>No la digas: cuando te toque, decí una sola palabra que tenga que ver.</p>`;
   }
+
+  // Un toquecito al abrir el expediente (el celu vibra solo si lo permite).
+  const vibrar = () => { if (navigator.vibrate) navigator.vibrate(25); };
 
   function htmlCarta() {
     const s = S(), j = s.jugadores[velo.id];
@@ -241,7 +251,7 @@
         <p class="tenue">Pasale el celu a</p>
         <h1 class="grande">${esc(j.nombre)}</h1>
         <p class="tenue">Que nadie más mire la pantalla.</p>
-        <button class="mantener" data-hold><span aria-hidden="true">👆</span>Mantené apretado para ver</button>
+        <button class="mantener" data-hold><span aria-hidden="true">🗂️</span>Mantené apretado para leer</button>
         ${velo.mirado ? `<button class="btn-principal grande" data-a="listoVer">Listo, ya lo vi</button>` : ""}
         <button class="btn" data-a="verFijo">Ver sin mantener apretado</button>
         <button class="link" data-a="cerrarVelo">Cancelar</button></div>` + (velo.ver ? htmlCarta() : "");
@@ -338,7 +348,7 @@
         <button class="btn" data-a="noAdivino">❌ No adivinó</button>
         <button class="link" data-a="otraVez">Escribir otra vez</button>`;
     return `<div class="paso-num">Ronda ${s.ronda}</div>
-      <div class="revela r-impostor"><div class="carta-emoji">${R.TIPOS[j.tipo].emoji}</div>
+      <div class="revela r-impostor"><span class="sello chico">Descubierto</span><div class="carta-emoji">${R.TIPOS[j.tipo].emoji}</div>
         <h1>${esc(j.nombre)} ${eraTexto(s, j)}</h1><p>Última chance: si adivina la palabra, gana solo.</p></div>
       <div class="adivinar">${cuerpo}</div>` + pie(`${btnDeshacer()}<span></span>`);
   }
@@ -352,7 +362,7 @@
       if (s.cfg.opciones.revelar || j.rol === "impostor" && s.adivinanza) {
         const extra = j.rol === "infiltrado" ? "<p>Tenía la palabra parecida.</p>"
           : s.adivinanza ? `<p>${s.adivinanza.texto ? `Dijo «${esc(s.adivinanza.texto)}»: no era.` : "No se animó a adivinar."}</p>` : "";
-        h += `<div class="revela r-${j.rol} secreto"><div class="carta-emoji">${R.TIPOS[j.tipo].emoji}</div>
+        h += `<div class="revela r-${j.rol} secreto"><span class="sello chico">Eliminado</span><div class="carta-emoji">${R.TIPOS[j.tipo].emoji}</div>
           <h1>${esc(j.nombre)} ${eraTexto(s, j)}</h1>${extra}</div>`;
       } else {
         h += `<div class="revela"><div class="carta-emoji">🚪</div><h1>${esc(j.nombre)} queda afuera</h1><p class="tenue">Qué era se sabe al final.</p></div>`;
@@ -369,7 +379,7 @@
     const titulo = s.ganador === "civiles" ? "¡Ganan los civiles!" : s.ganador === "otros" ? p.ganaOtros : `¡${nom(s, s.adivino)} adivinó la palabra!`;
     const sub = s.ganador === "adivino" ? "Gana solo." : s.ganador === "civiles" ? "Descubrieron a todos." : "Se mezclaron bien.";
     const hayInf = s.jugadores.some(j => j.rol === "infiltrado"), hayPista = s.jugadores.some(j => j.ve === "pista");
-    return `<div class="final g-${s.ganador}"><h1 class="grande">${titulo}</h1><p>${sub}</p></div>
+    return `<div class="final g-${s.ganador}"><span class="sello chico">Caso cerrado</span><h1 class="grande">${titulo}</h1><p>${sub}</p></div>
       <div class="palabras-fin"><div><small>Palabra</small><b>${esc(t.palabra)}</b></div>
         ${hayInf ? `<div><small>Parecida</small><b>${esc(t.parecida)}</b></div>` : ""}
         ${hayPista ? `<div><small>Pista</small><b>${esc(t.pista)}</b></div>` : ""}
@@ -617,6 +627,7 @@
     e.preventDefault();
     velo.ver = true; velo.fija = false;
     $("velo").insertAdjacentHTML("beforeend", htmlCarta());
+    vibrar();
   });
   const soltar = () => {
     if (!velo || !velo.ver || velo.fija) return;
@@ -686,7 +697,7 @@
         if (j.visto && !confirm(`${j.nombre} ya vio su palabra. ¿Verla de nuevo? Que nadie más mire.`)) break;
         velo = { tipo: "rol", id, ver: false, fija: false, mirado: false }; renderVelo(); break;
       }
-      case "verFijo": velo.ver = true; velo.fija = true; renderVelo(); break;
+      case "verFijo": velo.ver = true; velo.fija = true; renderVelo(); vibrar(); break;
       case "ocultar": velo.ver = false; velo.fija = false; velo.mirado = true; renderVelo(); break;
       case "cerrarVelo": velo = null; renderVelo(); break;
       case "listoVer": { const v = velo; velo = null; hacer("verRol", { id: v.id }); break; }

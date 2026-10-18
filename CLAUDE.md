@@ -35,6 +35,14 @@ Flujo: reparto → pistas → debate → votacion → [adivinar] → eliminado �
 `localStorage` (prefijo `infiltrado:` porque el dominio es compartido): `partida` (estado + deshacer), `config`, `marcador`, `reloj`, `mis-palabras`.
 `sw.js` solo borra cachés que empiezan con `infiltrado` y solo atiende pedidos dentro de su carpeta.
 
+## Diseño (2026-10-18): "expediente secreto"
+- Pizarra oscura con grano de papel (`--grano`, SVG inline) y renglones apenas visibles; acento manila `--acento`, tinta roja `--sello`.
+- Rótulos a máquina de escribir (`--mono`, Courier del sistema: no se agregan fuentes para que ande offline).
+- Mantener apretado = carpeta manila con pestaña "ABRIR". La palabra se lee en una hoja de papel (`.carta-caja`) **igual para todos**:
+  solo cambia el sello (`Confidencial` / `Impostor` / `En blanco`), así un mirón no distingue roles por el color. Vibra 25 ms al abrir.
+- Sellos animados: "Descubierto"/"Eliminado" en la eliminación y "Caso cerrado" en el final.
+- Configuración: "Reglas de la casa" plegadas en un `<details>` con resumen; el botón Repartir queda fijo abajo.
+
 ## Reglas decididas
 - El en blanco (`ve: "nada"`) nunca empieza la ronda; el impostor con pista/categoría solo si la opción lo permite.
 - Por rondas: civiles ganan sin rivales vivos; los otros cuando son tantos como los civiles (opción: cuando quedan 2).
