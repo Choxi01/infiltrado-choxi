@@ -1,0 +1,15 @@
+{
+  "name": "Infiltrado Choxi",
+  "short_name": "Infiltrado",
+  "lang": "es",
+  "id": "/infiltrado-choxi/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#120d1c",
+  "theme_color": "#120d1c",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#120d1c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Infiltrado">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Infiltrado Choxi</title>
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<div class="wrap">
+
+<nav class="tabs" role="tablist" aria-label="Secciones">
+  <button role="tab" data-a="tab" data-tab="juego" aria-selected="true">Juego</button>
+  <button role="tab" data-a="tab" data-tab="mis" aria-selected="false">Mis palabras</button>
+  <button role="tab" data-a="tab" data-tab="reglas" aria-selected="false">Cómo se juega</button>
+  <button role="tab" data-a="tab" data-tab="registro" aria-selected="false">Registro</button>
+</nav>
+
+<!-- CONFIGURACIÓN -->
+<section id="config" class="pagina" hidden>
+  <h1 class="marca" data-marca></h1>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Jugadores <span id="cuentaJug" class="cuenta"></span></div>
+    <form id="formJugador" class="agregar" autocomplete="off">
+      <input id="nuevoJugador" maxlength="300" placeholder="Nombre (o varios con coma)" enterkeyhint="done" aria-label="Nombre del jugador">
+      <button class="btn-principal">Agregar</button>
+    </form>
+    <div id="listaJug" class="chips"></div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Modo</div>
+    <div id="modos" class="modos"></div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Categorías</div>
+    <div id="categorias" class="chips"></div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Roles</div>
+    <div id="roles"></div>
+  </div>
+
+  <div class="bloque">
+    <div class="bloque-titulo">Opciones</div>
+    <div id="opciones" class="opciones"></div>
+  </div>
+
+  <div class="form-acciones">
+    <p id="errorConfig" class="error" hidden></p>
+    <button type="button" class="btn-principal grande" data-a="repartir">Repartir</button>
+    <button type="button" class="btn" data-a="volver" id="volver" hidden>Volver a la partida</button>
+  </div>
+</section>
+
+<!-- PARTIDA -->
+<section id="juego" class="pagina">
+  <div id="barra" class="barra"></div>
+  <div id="escena"></div>
+</section>
+
+<!-- MIS PALABRAS -->
+<section id="mis" class="pagina" hidden></section>
+
+<!-- CÓMO SE JUEGA -->
+<section id="reglas" class="pagina" hidden>
+  <h2>La idea</h2>
+  <p>Todos saben algo menos uno (o algunos). Se juega en persona con <b>un solo celu</b> que se pasa de mano en mano para ver la palabra en secreto.</p>
+  <ul class="lista-reglas">
+    <li>Cada uno toca su nombre, <b>mantiene apretado</b> para ver su palabra, la suelta y pasa el celu.</li>
+    <li>Por turno, cada uno dice <b>una sola palabra</b> en voz alta que tenga que ver con la suya.</li>
+    <li>No vale decir la palabra, ni pedir aclaraciones, ni comentar mientras otro habla.</li>
+    <li>Después se debate y se vota a quién eliminar.</li>
+  </ul>
+
+  <article class="carta-modo">
+    <h3>🕵️ Impostor</h3>
+    <p>Todos tienen la misma palabra menos los <b>impostores</b>, que saben que lo son. Según la partida, el impostor recibe una <b>pista</b> vaga, la <b>categoría</b> o <b>nada</b>, y se mezcla con lo que escucha.</p>
+    <p>Si eliminan a un impostor, tiene una última chance: si <b>adivina la palabra</b>, gana él solo.</p>
+    <p class="tenue">Por rondas: los civiles ganan cuando no queda ningún impostor; los impostores, cuando son tantos como los civiles. Con votación única, si no lo encuentran a la primera, ganan los impostores.</p>
+  </article>
+
+  <article class="carta-modo">
+    <h3>🎭 Infiltrado</h3>
+    <p>Los civiles tienen una palabra y el <b>infiltrado</b> otra <b>parecida</b> (café / té)… <b>y no sabe</b> que es distinta. Puede haber además un jugador <b>en blanco</b>, que sabe que no tiene palabra.</p>
+    <p>Al eliminar al que está en blanco, puede adivinar la palabra de los civiles y ganar solo. Los civiles ganan cuando no queda ni infiltrado ni en blanco.</p>
+  </article>
+
+  <article class="carta-modo apagado">
+    <h3>🗺️ El Espía <span class="pronto">Próximamente</span></h3>
+    <p>Todos saben en qué <b>lugar</b> están (y qué rol tienen) menos el espía. Se hacen preguntas con reloj; cualquiera puede parar el reloj y acusar (tiene que ser unánime). El espía puede plantarse y decir el lugar.</p>
+  </article>
+
+  <article class="carta-modo apagado">
+    <h3>💡 Una Palabra <span class="pronto">Próximamente</span></h3>
+    <p>Cooperativo. Uno adivina; los demás escriben una pista de una palabra en secreto. Las <b>repetidas se anulan</b>. Son 13 cartas: ¿cuántas aciertan?</p>
+  </article>
+
+  <h2>Puntos</h2>
+  <div class="tabla-wrap"><table>
+    <thead><tr><th>Si gana…</th><th>Puntos</th></tr></thead>
+    <tbody>
+      <tr><td>Civiles</td><td class="q">2 cada uno</td></tr>
+      <tr><td>Impostor / en blanco</td><td class="q">6</td></tr>
+      <tr><td>Infiltrado</td><td class="q">10</td></tr>
+    </tbody>
+  </table></div>
+  <p class="nota-pie">Cuando ganan los impostores o infiltrados, suman todos los de ese bando (aunque los hayan eliminado). El que adivina la palabra suma solo él.</p>
+
+  <h2>Trucos</h2>
+  <ul class="lista-reglas">
+    <li>👁 arriba desenfoca lo secreto si el celu queda sobre la mesa.</li>
+    <li>↶ Deshacer arregla un toque equivocado.</li>
+    <li>En <b>Mis palabras</b> pueden armar categorías propias y pasárselas a otro grupo.</li>
+  </ul>
+</section>
+
+<!-- REGISTRO -->
+<section id="registro" class="pagina" hidden>
+  <div id="reg"></div>
+</section>
+
+</div>
+
+<!-- Ver la palabra o votar en secreto -->
+<div id="velo" class="velo" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="js/marca.js"></script>
+<script src="js/reglas.js"></script>
+<script src="js/presets.js"></script>
+<script src="js/datos/temas.js"></script>
+<script src="js/datos/lugares.js"></script>
+<script src="js/estado.js"></script>
+<script src="js/app.js"></script>
+<script src="js/volver.js"></script>
+</body>
+</html>
