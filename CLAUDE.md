@@ -9,7 +9,7 @@ Todo el texto, commits y respuestas en **español rioplatense** (voseo). No usar
 - **V1 hecha**: Impostor + Infiltrado completos. El Espía y Una Palabra se ven como "Próximamente",
   pero su lógica pura ya está en `reglas.js` con pruebas (`puntosEspia`, `condena`, `relojEspia`, `anularPistas`, `jugarCarta`, `fraseUnaPalabra`)
   y los datos de El Espía en `js/datos/lugares.js` (34 lugares).
-- Pendiente de la V1: crear el repo `Choxi01/infiltrado-choxi`, activar Pages y sumar el juego a `juegos.json` del hub `choxi-juegos`.
+- Publicada en GitHub Pages y enlazada desde el hub `choxi-juegos` (`tipo: app`).
 
 ## Cómo trabajar
 1. `git pull` antes de tocar nada.
