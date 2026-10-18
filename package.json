@@ -1,0 +1,6 @@
+{
+  "name": "infiltrado-choxi",
+  "private": true,
+  "description": "Infiltrado Choxi: Impostor, Infiltrado, El Espía y Una Palabra con un solo celu (PWA estática)",
+  "scripts": { "test": "node tests/reglas.test.js" }
+}
